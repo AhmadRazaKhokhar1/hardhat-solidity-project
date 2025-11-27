@@ -1,43 +1,38 @@
 import { expect } from "chai";
 import { network } from "hardhat";
+import { Token, Token__factory } from "../types/ethers-contracts/index.js";
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 
 const { ethers } = await network.connect();
+const INITIAL_SUPPLY = 100000;
+describe("Token Contract", () => {
+    let owner: HardhatEthersSigner, addr1: HardhatEthersSigner, addr2: HardhatEthersSigner, addresses: HardhatEthersSigner[], deployedContract: Token, Token: Token__factory;
 
-describe("Token contract", () => {
-    it("Deployment should assign total supply to the owner", async () => {
-        const [owner] = await ethers.getSigners();
-        console.log('Signers object: ', owner);
-
-        const Token = await ethers.getContractFactory("Token");// Contract Instance
-        console.log("Token from contract factory: ", Token)
-
-        const hardhatToken = await Token.deploy();// Deployment of contract
-        const ownerBalance = await hardhatToken.checkMyBalance();
-
-        console.log("Owner Address: ", owner.address);
-        console.log("Owner Balance: ", ownerBalance);
-
-        // expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+    beforeEach(async () => {
+        Token = await ethers.getContractFactory("Token");
+        [owner, addr1, addr2, ...addresses] = await ethers.getSigners();
+        deployedContract = await ethers.deployContract("Token");
     });
 
-    it("Deployment should assign total supply to the owner", async () => {
-        const [owner, address1, address2] = await ethers.getSigners();
-        console.log('Signers array: ', [owner, address1, address2]);
-        const Token = await ethers.getContractFactory("Token");
-        const hardhatToken = await Token.deploy();
+    describe("Deployment", () => {
+        it("Should set the current user as owner", async () => {
+            expect(await deployedContract.owner()).to.equal(owner.address);
+        });
 
-        // Transfer 100 tokens from owner to address1
-        await hardhatToken.transfer(address1.address, 100);
-        console.log('Balance of address1: ', await hardhatToken.balanceOf(address1.address));
-        expect(await hardhatToken.balanceOf(address1.address)).to.equal(100);
+        it("The total supply should be assigned to the owner", async () => {
+            expect(await deployedContract.balanceOf(owner.address)).to.equal(INITIAL_SUPPLY);
+        });
+    });
 
-        // Transfer 10 tokens from address1 to address2
-        const TokenWithAddress1 = await hardhatToken.connect(address1); // Switching to address1 as msg.sender
-
-        await TokenWithAddress1.transfer(address2.address, 10);
-        console.log('Balance of address2: ', await TokenWithAddress1.balanceOf(address2.address));
-        console.log('Balance of address1: ', await TokenWithAddress1.balanceOf(address1.address));
-        console.log('Balance of owner: ', await TokenWithAddress1.balanceOf(owner.address));
-        expect(await TokenWithAddress1.balanceOf(address2.address)).to.equal(10);
-    })
+    describe("Transferring of amounts to different accounts", () => {
+        it("Should transfer 15000 tokens from owner to addr1 account", async () => {
+            await deployedContract.transfer(addr1.address, 15000);
+            expect(await deployedContract.checkMyBalance()).to.equal(INITIAL_SUPPLY - 15000, "owner's account balance should be equal to total supply - 15000");
+            expect(await deployedContract.connect(addr1).checkMyBalance()).to.equal(15000, "addr1 should have 15000 in his account");
+            const addr1Instance = deployedContract.connect(addr1);
+            await addr1Instance.transfer(addr2.address, 5000);
+            expect(await addr1Instance.checkMyBalance()).to.equal(10000, "After transferring 5000 tokens to addr2, addr1 should have 10000 remaining balance");
+            expect(await deployedContract.balanceOf(addr2.address)).equal(5000, "After receiving 5000 tokens from addr1, addr2 should have 5000 in his account");
+        });
+    });
 })
