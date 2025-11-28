@@ -3,10 +3,10 @@ import { network } from "hardhat";
 const { ethers } = await network.connect();
 dotenv.config();
 
-const { SEPOLIA_RPC_URL, SEPOLIA_PRIVATE_KEY, ALCHEMY_PRIVATE_KEY } = process.env;
+const { ALCHEMY_RPC_URL, SEPOLIA_PRIVATE_KEY, ALCHEMY_PRIVATE_KEY } = process.env;
 
 async function main() {
-    const provider = new ethers.JsonRpcProvider(`${SEPOLIA_RPC_URL ?? ""}${ALCHEMY_PRIVATE_KEY ?? ""}`);
+    const provider = new ethers.JsonRpcProvider(`${ALCHEMY_RPC_URL ?? ""}${ALCHEMY_PRIVATE_KEY ?? ""}`);
 
     // If you need to send transactions, create a signer
     const signer = new ethers.Wallet(SEPOLIA_PRIVATE_KEY ?? "", provider);
