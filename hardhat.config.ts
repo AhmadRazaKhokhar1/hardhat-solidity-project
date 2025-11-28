@@ -2,8 +2,8 @@ import hardhatToolboxMochaEthersPlugin from "@nomicfoundation/hardhat-toolbox-mo
 import { configVariable, defineConfig } from "hardhat/config";
 import { configDotenv } from 'dotenv';
 configDotenv();
-const { SEPOLIA_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY } = process.env;
-console.log('SEPOLIA_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY: ', SEPOLIA_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY);
+const { ALCHEMY_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY } = process.env;
+console.log('ALCHEMY_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY: ', ALCHEMY_RPC_URL, ALCHEMY_PRIVATE_KEY, SEPOLIA_PRIVATE_KEY);
 
 export default defineConfig({
   plugins: [hardhatToolboxMochaEthersPlugin],
@@ -35,7 +35,7 @@ export default defineConfig({
     sepolia: {
       type: "http",
       chainType: "l1",
-      url: `${SEPOLIA_RPC_URL ?? ""}${ALCHEMY_PRIVATE_KEY ?? ""}`,
+      url: `${ALCHEMY_RPC_URL ?? ""}${ALCHEMY_PRIVATE_KEY ?? ""}`,
       accounts: SEPOLIA_PRIVATE_KEY ? [SEPOLIA_PRIVATE_KEY] : [],
     },
   },

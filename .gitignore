@@ -1,20 +1,48 @@
 # Node modules
+
 /node_modules
 
+
+
 # Compilation output
+
 /dist
 
+
+
 # pnpm deploy output
+
 /bundle
 
+
+
 # Hardhat Build Artifacts
+
 /artifacts
 
+
+
 # Hardhat compilation (v2) support directory
+
 /cache
 
+
+
 # Typechain output
+
 /types
 
+
+
 # Hardhat coverage reports
+
 /coverage
+
+config.bat
+
+temp_auto_push.bat
+
+temp_interactive_push.bat
+
+.gitignore
+branch_structure.json
